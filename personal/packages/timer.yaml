@@ -1,0 +1,123 @@
+homeassistant:
+  customize:
+    timer.timer:
+      friendly_name: 延迟倒计时
+    input_text.timer:
+      friendly_name: 设置延迟时间
+      icon: mdi:timer
+    script.timer_cancel:
+      friendly_name: 取消倒计时
+      icon: mdi:timer-off
+
+group:
+  timer_switch:
+    name: 智能延迟器
+    entities:
+      - input_select.timer_fan
+      - input_select.timer_switch
+      - automation.text_timer
+      - input_text.timer
+      - timer.timer
+      - script.timer_cancel
+
+timer:
+  timer:
+    duration: '00:00:00'
+
+input_text:
+  timer:
+    name: timer
+    initial: 00:00:00
+    pattern: '([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]'
+
+input_select:
+  timer_fan:
+    name: 延时关闭空调/电扇
+    options:
+      - Select Input
+      - 主卧小吊扇
+      - 主卧风扇
+      - 客厅风扇
+      - 主卧空调
+    initial: 'Select Input'
+    icon: mdi:toggle-switch-off
+  timer_switch:
+    name: 延时关闭设备
+    options:
+      - Select Input
+      - 客厅灯
+      - 餐厅灯
+      - 主卧灯
+      - 厕所灯
+      - 电视开关
+    initial: 'Select Input'
+    icon: mdi:toggle-switch-off
+
+script:
+  timer_cancel:
+    sequence:
+      service: timer.cancel
+      entity_id: timer.timer
+
+automation:
+  - alias: text_timer
+    hide_entity: true
+    trigger:
+      platform: state
+      entity_id: input_text.timer
+    action:
+      service: timer.start
+      data_template: 
+        entity_id: timer.timer
+        duration: >
+          {{ states("input_text.timer") }}
+
+  - alias: timer_fan_delay
+    trigger: 
+      platform: event
+      event_type: timer.finished
+      event_data: 
+        entity_id: timer.timer
+    action: 
+      - service: switch.turn_off
+        data_template:
+          entity_id: >-
+            {% if is_state("input_select.timer_fan", "主卧小吊扇") %}
+              switch.littlefan
+            {% elif is_state("input_select.timer_fan", "主卧风扇") %}
+              switch.airmatefan
+            {% elif is_state("input_select.timer_fan", "客厅风扇") %}
+              switch.live_room_fan
+            {% elif is_state("input_select.timer_fan", "主卧空调") %}
+              switch.galanz
+            {% endif %}
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.timer_fan
+          option: "Select Input"
+
+  - alias: timer_switch_turnoff
+    trigger:
+      platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.timer
+    action:
+      - service: homeassistant.turn_off
+        data_template:
+          entity_id: >-
+            {% if is_state("input_select.timer_switch", "客厅灯") %}
+              switch.living_room_light
+            {% elif is_state("input_select.timer_switch", "餐厅灯") %}
+              switch.dining_room_light
+            {% elif is_state("input_select.timer_switch", "主卧灯") %}
+              switch.bedroom_light
+            {% elif is_state("input_select.timer_switch", "厕所灯") %}
+              switch.washroom_light
+            {% elif is_state("input_select.timer_switch", "电视开关") %}
+              switch.tv_switch
+            {% endif %}
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.timer_switch
+          option: "Select Input"

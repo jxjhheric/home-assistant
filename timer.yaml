@@ -1,0 +1,130 @@
+homeassistant:
+  customize:
+    timer.timer:
+      friendly_name: 延迟倒计时
+    input_text.timer:
+      friendly_name: 设置延迟时间
+      icon: mdi:timer
+    script.timer_cancel:
+      friendly_name: 取消倒计时
+      icon: mdi:timer-off
+
+group:
+  timer_switch:
+    name: 智能延迟器
+    entities:
+      - input_select.timer_daikin
+      - input_select.timer_switch
+      - automation.text_timer
+      - input_text.timer
+      - timer.timer
+      - script.timer_cancel
+
+timer:
+  timer:
+    duration: '00:00:00'
+
+input_text:
+  timer:
+    name: timer
+    initial: 00:00:00
+    pattern: '([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]'
+
+input_select:
+  timer_daikin:
+    name: 延时关闭空调
+    options:
+      - Select Input
+      - 客厅空调
+      - 客厅空调2
+      - 书房空调
+      - 睡房空调
+      - 客房空调
+    initial: 'Select Input'
+    icon: mdi:toggle-switch-off
+  timer_switch:
+    name: 延时关闭设备
+    options:
+      - Select Input
+      - 睡房闹钟1
+      - 睡房闹钟2
+      - 浪漫模式
+      - 睡房日光灯
+      - 睡房右灯
+      - 睡房吸顶灯
+    initial: 'Select Input'
+    icon: mdi:toggle-switch-off
+
+script:
+  timer_cancel:
+    sequence:
+      service: timer.cancel
+      entity_id: timer.timer
+
+automation:
+  - alias: text_timer
+    hide_entity: true
+    trigger:
+      platform: state
+      entity_id: input_text.timer
+    action:
+      service: timer.start
+      data_template: 
+        entity_id: timer.timer
+        duration: >
+          {{ states("input_text.timer") }}
+
+  - alias: timer_daikin_delay
+    trigger: 
+      platform: event
+      event_type: timer.finished
+      event_data: 
+        entity_id: timer.timer
+    action: 
+      - service: climate.set_operation_mode
+        data_template:
+          entity_id: >-
+            {% if is_state("input_select.timer_daikin", "客厅空调") %}
+              climate.daikin_livingroom
+            {% elif is_state("input_select.timer_daikin", "客厅空调2") %}
+              climate.daikin_livingroom2
+            {% elif is_state("input_select.timer_daikin", "书房空调") %}
+              climate.daikin_studio
+            {% elif is_state("input_select.timer_daikin", "睡房空调") %}
+              climate.daikin_bedroom
+            {% elif is_state("input_select.timer_daikin", "客房空调") %}
+              climate.daikin_guestroom
+            {% endif %}
+          operation_mode: '关闭'
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.timer_daikin
+          option: "Select Input"
+
+  - alias: timer_switch_turnoff
+    trigger:
+      platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.timer
+    action:
+      - service: homeassistant.turn_off
+        data_template:
+          entity_id: >-
+            {% if is_state("input_select.timer_switch", "睡房闹钟1") %}
+              input_boolean.k7bt_alarm1
+            {% elif is_state("input_select.timer_switch", "睡房闹钟2") %}
+              input_boolean.k7bt_alarm2
+            {% elif is_state("input_select.timer_switch", "浪漫模式") %}
+              input_boolean.romantic_time
+            {% elif is_state("input_select.timer_switch", "睡房日光灯") %}
+              switch.sonoff_02
+            {% elif is_state("input_select.timer_switch", "睡房右灯") %}
+              light.bedroom_right
+            {% elif is_state("input_select.timer_switch", "睡房吸顶灯") %}
+              light.ceilinglight
+            {% endif %}
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.timer_switch
+          option: "Select Input"

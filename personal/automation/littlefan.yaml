@@ -1,0 +1,20 @@
+automation:
+# 
+- alias: 'turnon littlefan from ir remote'
+  trigger:
+    platform: mqtt
+      topic: "/home/IRtoMQTT/raw"
+      //topic: "/home/IRtoMQTT"
+      payload: '4007692820'
+  action:
+    service: switch.turn_on
+    entity_id: switch.device1
+- alias: 'turnoff littlefan from ir remote'
+  trigger:
+    platform: mqtt
+      topic: "/home/IRtoMQTT/raw"
+      //topic: "/home/IRtoMQTT"
+      payload: '3337692820'
+  action:
+    service: switch.turn_off
+    entity_id: switch.device1

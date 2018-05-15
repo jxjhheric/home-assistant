@@ -1,0 +1,86 @@
+homeassistant:
+//计时器
+timer:
+  tvtimer:
+    duration: '00:30:00'
+//计数器    
+counter:
+  counter:
+    initial: 0
+    step: 1
+    name: tv time notify counter
+    icon: mdi:counter
+//取消重置按钮
+script:
+  timer_cancel:
+    sequence:
+      service: timer.cancel
+      entity_id: timer.tvtimer
+  timer_pause:
+    sequence:
+      service: timer.pause
+      entity_id: timer.tvtimer
+  counter_reset:
+    sequence:
+      service: counter.reset
+      entity_id: counter.counter
+
+automation:
+//电视开机开始启动计时器
+  - alias: timer_start
+    initial_state: on
+    hide_entity: true
+    trigger:
+      platform: state
+      entity_id: device_tracker.kttv
+      to: 'home'
+    action:
+      service: timer.start
+      entity_id: timer.tvtimer
+//时间到，语音提醒--重新计时--计数增加        
+  - alias: timer_notify
+    initial_state: on
+    trigger: 
+      platform: event
+      event_type: timer.finished
+      event_data: 
+        entity_id: timer.tvtimer
+    action: 
+      - service: tts.baidu_say
+        entity_id: media_player.floor
+        data:
+          message: >
+            '{{ ["你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧", "又半个小时过去了，让你的眼睛休息一下，爱你", "半个小时啦，再看爸爸妈妈要生气啦", "小朋友要诚实，说好看半个小时就半个小时"] | random }}''
+      - service: timer.start
+        entity_id: timer.tvtimer
+      - service: counter.increment
+        entity_id: counter.counter
+//计数达到3次，最后提醒
+- alias: warning
+  hide_entity: true
+  initial_state: 'on'
+  trigger:
+    - platform: numeric_state
+      entity_id: counter.counter.
+      to: 3
+      for：
+        minutes: 25
+  action:
+    - service: tts.baidu_say
+        entity_id: media_player.floor
+        data:
+          message: '最后警告，还有五分钟，请小朋友自己把电视关掉，要不就自动关机了。'
+    - service: switch.turn_off
+      entity_id: switch.tv_switch
+- alias: counter end
+  hide_entity: true
+  initial_state: 'on'
+  trigger:
+    - platform: numeric_state
+      entity_id: counter.counter.
+      to: 4
+  action:
+    - service: switch.turn_off
+      entity_id: switch.tv_switch
+    - service: counter.reset
+      entity_id: counter.counter

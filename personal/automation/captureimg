@@ -1,0 +1,16 @@
+- alias: capture img when door open
+  trigger:
+    platform: state
+    entity_id: binary_sensor.menci
+    to: 'on'
+  action:
+    - service: camera.snapshot
+      data:
+        entity_id: camera.ezviz
+        filename: '/data/data/com.termux/files/home/.homeassistant/downloads/ezviz_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
+    - service: notify.mypushbullet
+      data:
+        title: "Test"
+        message: "See attached picture"
+          data:
+          file: '/data/data/com.termux/files/home/.homeassistant/downloads/ezviz_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'

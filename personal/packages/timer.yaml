@@ -61,6 +61,7 @@ script:
 
 automation:
   - alias: text_timer
+  initial_state: on
     hide_entity: true
     trigger:
       platform: state
@@ -73,6 +74,7 @@ automation:
           {{ states("input_text.timer") }}
 
   - alias: timer_fan_delay
+  initial_state: on
     trigger: 
       platform: event
       event_type: timer.finished
@@ -97,6 +99,7 @@ automation:
           option: "Select Input"
 
   - alias: timer_switch_turnoff
+  initial_state: on
     trigger:
       platform: event
       event_type: timer.finished

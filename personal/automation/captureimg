@@ -4,6 +4,7 @@
     entity_id: binary_sensor.menci
     to: 'on'
   action:
+    - delay: "00:00:03"
     - service: camera.snapshot
       data:
         entity_id: camera.ezviz

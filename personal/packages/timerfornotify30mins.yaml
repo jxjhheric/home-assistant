@@ -1,16 +1,16 @@
 homeassistant:
-//计时器
+# 计时器
 timer:
   tvtimer:
     duration: '00:30:00'
-//计数器    
+# 计数器    
 counter:
   counter:
     initial: 0
     step: 1
     name: tv time notify counter
     icon: mdi:counter
-//取消重置按钮
+# 取消重置按钮
 script:
   timer_cancel:
     sequence:
@@ -26,7 +26,7 @@ script:
       entity_id: counter.counter
 
 automation:
-//电视开机开始启动计时器
+# 电视开机开始启动计时器
   - alias: timer_start
     initial_state: on
     hide_entity: true
@@ -37,7 +37,7 @@ automation:
     action:
       service: timer.start
       entity_id: timer.tvtimer
-//时间到，语音提醒--重新计时--计数增加        
+# 时间到，语音提醒--重新计时--计数增加        
   - alias: timer_notify
     initial_state: on
     trigger: 
@@ -55,13 +55,15 @@ automation:
         entity_id: timer.tvtimer
       - service: counter.increment
         entity_id: counter.counter
-//计数达到3次，最后提醒
+# 计数达到3次，最后提醒
 - alias: warning
   hide_entity: true
   initial_state: 'on'
   trigger:
     - platform: numeric_state
-      entity_id: counter.counter.
+      entity_id: counter.counter
+#      above: 2
+#      below: 4
       to: 3
       for：
         minutes: 25
@@ -69,15 +71,16 @@ automation:
     - service: tts.baidu_say
         entity_id: media_player.floor
         data:
-          message: '最后警告，还有五分钟，请小朋友自己把电视关掉，要不就自动关机了。'
-    - service: switch.turn_off
-      entity_id: switch.tv_switch
+          message: '最后警告，最后警告，还有五分钟，请把电视关掉，要不就自动关机了。'
+# 到时间关机，重置计数器
 - alias: counter end
   hide_entity: true
   initial_state: 'on'
   trigger:
     - platform: numeric_state
-      entity_id: counter.counter.
+      entity_id: counter.counter
+#      above: 3
+#      below: 5
       to: 4
   action:
     - service: switch.turn_off

@@ -40,12 +40,12 @@ automation:
 # 时间到，语音提醒--重新计时--计数增加        
   - alias: timer_notify
     initial_state: on
-    trigger: 
+    trigger:
       platform: event
       event_type: timer.finished
-      event_data: 
+      event_data:
         entity_id: timer.tvtimer
-    action: 
+    action:
       - service: tts.baidu_say
         entity_id: media_player.floor
         data:
@@ -62,10 +62,9 @@ automation:
   trigger:
     - platform: numeric_state
       entity_id: counter.counter
-#      above: 2
-#      below: 4
-      to: 3
-      for：
+      above: 2
+      below: 4
+      for:
         minutes: 25
   action:
     - service: tts.baidu_say
@@ -73,17 +72,16 @@ automation:
         data:
           message: '最后警告，最后警告，还有五分钟，请把电视关掉，要不就自动关机了。'
 # 到时间关机，重置计数器
-- alias: counter end
-  hide_entity: true
-  initial_state: 'on'
-  trigger:
-    - platform: numeric_state
-      entity_id: counter.counter
-#      above: 3
-#      below: 5
-      to: 4
-  action:
-    - service: switch.turn_off
-      entity_id: switch.tv_switch
-    - service: counter.reset
-      entity_id: counter.counter
+  - alias: counter end
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: numeric_state
+        entity_id: counter.counter
+        above: 3
+        below: 5
+    action:
+      - service: switch.turn_off
+        entity_id: switch.tv_switch
+      - service: counter.reset
+        entity_id: counter.counter

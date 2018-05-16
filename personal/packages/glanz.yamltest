@@ -1,0 +1,141 @@
+homeassistant:
+input_select:
+  select_rooms_ac:
+    name: '选择空调:'
+    options:
+      - Select Rooms
+      - 主卧
+      - 客房
+      - 客厅
+    initial: Select Rooms
+    icon: mdi:air-conditioner
+input_slider:
+  airconditioner_temp:
+    name: '空调温度'
+    icon: mdi:thermometer-lines
+    initial: 26
+    min: 18
+    max: 30
+    step: 1
+
+  varmepumpe_vifte:
+    name: Viftehastighet (0=Auto)
+    initial: 0
+    min: 0
+    max: 5
+    step: 1
+    icon: mdi:fan
+
+  varmepumpe_retning:
+    name: Luftretning (0=Auto)
+    initial: 0
+    min: 0
+    max: 5
+    step: 1
+    icon: mdi:weather-windy
+
+  stue_temperatur:
+    name: Ønsket temperatur stue
+    initial: 25
+    min: 16
+    max: 30
+    step: 1
+    icon: mdi:thermometer
+
+automation old varmepumpe_send:
+  alias: Varmepumpe Send
+  trigger:
+    platform: state
+    entity_id: input_boolean.varmepumpe_send
+    from: 'off'
+    to: 'on'
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "/espeasy01/cmd"
+        payload_template: "heatpumpir,panasonic_dke,{% if states.input_boolean.varmepumpe_onoff.state == 'on' %}1{% elif states.input_boolean.varmepumpe_onoff.state == 'off' %}0{% endif %},{% if states.input_select.varmepumpe_mode.state == 'Auto' %}1{% elif states.input_select.varmepumpe_mode.state == 'Varme' %}2{% elif states.input_select.varmepumpe_mode.state == 'Kjøling' %}3{% elif states.input_select.varmepumpe_mode.state == 'Avfukting' %}4{% elif states.input_select.varmepumpe_mode.state == 'Vifte' %}5{% endif %},{{states.input_slider.varmepumpe_vifte.state|int}},{{states.input_slider.varmepumpe_temp.state|int}},{{states.input_slider.varmepumpe_retning.state|int}},0"
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.varmepumpe_send
+
+automation old stue_termostat_opp:
+  alias: Varmepumpetemperatur opp
+  trigger:
+    platform: time
+    minutes: '/10'
+    seconds: 00
+  condition:
+    condition: template
+    value_template: '{{ states.sensor.temperature.state | float - states.input_slider.stue_temperatur.state | float < 0.5 }}'
+  action:
+    - service: input_slider.select_value
+      data_template:
+        entity_id: input_slider.varmepumpe_temp
+        value: '{{ states.input_slider.varmepumpe_temp.state | float + 1 }}'
+    - service: mqtt.publish
+      data:
+        topic: "/espeasy01/cmd"
+        payload_template: "heatpumpir,panasonic_dke,{% if states.input_boolean.varmepumpe_onoff.state == 'on' %}1{% elif states.input_boolean.varmepumpe_onoff.state == 'off' %}0{% endif %},{% if states.input_select.varmepumpe_mode.state == 'Auto' %}1{% elif states.input_select.varmepumpe_mode.state == 'Varme' %}2{% elif states.input_select.varmepumpe_mode.state == 'Kjøling' %}3{% elif states.input_select.varmepumpe_mode.state == 'Avfukting' %}4{% elif states.input_select.varmepumpe_mode.state == 'Vifte' %}5{% endif %},{{states.input_slider.varmepumpe_vifte.state|int}},{{states.input_slider.varmepumpe_temp.state|int}},{{states.input_slider.varmepumpe_retning.state|int}},0"
+
+automation old stue_termostat_ned:
+  alias: Varmepumpetemperatur ned
+  trigger:
+    platform: time
+    minutes: '/10'
+    seconds: 00
+  condition:
+    condition: template
+    value_template: '{{ states.sensor.temperature.state | float - states.input_slider.stue_temperatur.state | float > 0.5 }}'
+  action:
+    - service: input_slider.select_value
+      data_template:
+        entity_id: input_slider.varmepumpe_temp
+        value: '{{ states.input_slider.varmepumpe_temp.state | float - 1 }}'
+    - service: mqtt.publish
+      data:
+        topic: "/espeasy01/cmd"
+        payload_template: "heatpumpir,panasonic_dke,{% if states.input_boolean.varmepumpe_onoff.state == 'on' %}1{% elif states.input_boolean.varmepumpe_onoff.state == 'off' %}0{% endif %},{% if states.input_select.varmepumpe_mode.state == 'Auto' %}1{% elif states.input_select.varmepumpe_mode.state == 'Varme' %}2{% elif states.input_select.varmepumpe_mode.state == 'Kjøling' %}3{% elif states.input_select.varmepumpe_mode.state == 'Avfukting' %}4{% elif states.input_select.varmepumpe_mode.state == 'Vifte' %}5{% endif %},{{states.input_slider.varmepumpe_vifte.state|int}},{{states.input_slider.varmepumpe_temp.state|int}},{{states.input_slider.varmepumpe_retning.state|int}},0"
+automations:
+  - alias: Air Gilma ON
+    trigger:
+      platform: time
+      minutes: '/10'
+      seconds: 00
+    condition:
+      condition: and
+      conditions: 
+        - condition: state
+          entity_id: sun.sun
+          state: 'below_horizon'
+        - condition: numeric_state
+          entity_id: 'sensor.netatmo_gilma_bedroom_temperature'
+          above: '25'
+    action:
+      - service: switch.turn_on
+        entity_id: switch.air_gilma
+      - service: mqtt.publish
+        data:
+          topic: air/gilma
+          payload: "on"
+          retain: "true"
+  - alias: Air Gilma OFF
+    trigger:
+      platform: time
+      minutes: '/10'
+      seconds: 00
+    condition:
+      condition: and
+      conditions: 
+        - condition: state
+          entity_id: sun.sun
+          state: 'below_horizon'
+        - condition: numeric_state
+          entity_id: 'sensor.netatmo_gilma_bedroom_temperature'
+          below: '24'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.air_gilma
+      - service: mqtt.publish
+        data:
+          topic: air/gilma
+          payload: "off"
+          retain: "true"

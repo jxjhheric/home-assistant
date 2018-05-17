@@ -1,7 +1,6 @@
 homeassistant:
 
 android_ip_webcam:
-  - name: 'Kitchen'
   - host: 192.168.1.104
     port: 8080
     sensors:
@@ -32,11 +31,11 @@ automation:
       entity_id: sensor.kitchen_motion
       above: '350'
     condition:
-      - condition: state
-        entity_id: binary_sensor.menci
-        state: 'on'
-        for:
-          seconds: 3
+      condition: state
+      entity_id: binary_sensor.menci
+      state: 'on'
+      for:
+        seconds: 3
     action:
       service: notify.notify
       data_template:
@@ -49,12 +48,11 @@ automation:
       entity_id: binary_sensor.menci
       to: 'on'
     condition:
-      - condition: state
-        entity_id: sensor.kitchen_motion
-        above: '350'
+      condition: state
+      entity_id: sensor.kitchen_motion
+      above: '350'
     action:
       service: notify.notify
       data_template:
         message: >
           {{"要出门了吗？现在外面热哦"}}
-    

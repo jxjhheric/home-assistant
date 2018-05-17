@@ -1,3 +1,4 @@
+#need homeassistant v0.6.5
 homeassistant:
   customize:
     sensor.filtered_washroom_humidity:

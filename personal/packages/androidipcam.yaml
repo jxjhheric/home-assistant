@@ -48,7 +48,7 @@ automation:
       entity_id: binary_sensor.menci
       to: 'on'
     condition:
-      condition: state
+      condition: numeric_state
       entity_id: sensor.ip_webcam_motion
       above: '350'
     action:

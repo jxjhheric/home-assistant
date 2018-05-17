@@ -6,6 +6,7 @@ homeassistant:
     switch.airmatefaninde:
       friendly_name: 艾美特电风扇加减风量
       icon: mdi:arrow-expand-vertical
+      assumed_state: false
     switch.airmatefanshakehead:
       friendly_name: 艾美特电风扇摇头
       icon: mdi:autorenew
@@ -15,6 +16,7 @@ homeassistant:
     switch.galanzto2728:
       friendly_name: 空调2728度
       icon: mdi:upload-multiple
+      assumed_state: false
     group.bedroom:
       friendly_name: 主卧
       

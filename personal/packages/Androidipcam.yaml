@@ -1,0 +1,60 @@
+homeassistant:
+
+android_ip_webcam:
+  - name: 'Kitchen'
+  - host: 192.168.1.104
+    port: 8080
+    sensors:
+      - audio_connections
+      - battery_level
+      - battery_temp
+      - battery_voltage
+      - light
+      - motion
+      - pressure
+      - proximity
+      - sound
+      - video_connections
+    switches:
+      - exposure_lock
+      - ffc
+      - focus
+      - gps_active
+      - night_vision
+      - overlay
+      - torch
+      - whitebalance_lock
+      - video_recording
+automation:
+  - alias: 'Open Door get in'
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.kitchen_motion
+      above: '350'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.menci
+        state: 'on'
+        for:
+          seconds: 3
+    action:
+      service: notify.notify
+      data_template:
+        message: >
+          {{"欢迎回家！"}}
+      
+  - alias: 'Open Door Go out'
+    trigger:
+      platform: state
+      entity_id: binary_sensor.menci
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: sensor.kitchen_motion
+        above: '350'
+    action:
+      service: notify.notify
+      data_template:
+        message: >
+          {{"要出门了吗？现在外面热哦"}}
+    

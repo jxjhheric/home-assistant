@@ -1,0 +1,31 @@
+homeassistant:
+customize:
+    sensor.filtered_washroom_humidity
+      friendly_name: 真实的湿度
+      icon: mdi:water-percent
+    sensor.filtered_washroom_temperature
+      friendly_name: 真实的温度
+      icon: mdi:temperature-celsius
+sensor:
+  - platform: filter
+    name: "filtered washroom humidity"
+    entity_id: sensor.washroom_hum
+    filters:
+      - filter: outlier
+        window_size: 4
+        radius: 4.0
+      - filter: lowpass
+        time_constant: 10
+        precision: 2
+  - platform: filter
+    name: "filtered washroom temperature"
+    entity_id: sensor.washroom_temp
+    filters:
+      - filter: outlier
+        window_size: 4
+        radius: 2.0
+      - filter: lowpass
+        time_constant: 10
+      - filter: time_simple_moving_average
+        window_size: 00:05
+        precision: 2

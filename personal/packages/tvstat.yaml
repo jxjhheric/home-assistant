@@ -3,14 +3,14 @@ sensor:
   - platform: history_stats
     name: TV ON today
     entity_id: device_tracker.tvbox
-    state: 'on'
+    state: 'home'
     type: time
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'
   - platform: history_stats
     name: count TV ON today
     entity_id: device_tracker.tvbox
-    state: 'on'
+    state: 'home'
     type: count
     start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
     end: '{{ now() }}'

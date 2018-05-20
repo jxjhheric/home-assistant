@@ -68,7 +68,7 @@ sensor:
         precision: 2
   - platform: filter
     name: "filtered livingroom temperature"
-    entity_id: ensor.livingroomtemp
+    entity_id: sensor.livingroomtemp
     filters:
       - filter: outlier
         window_size: 4

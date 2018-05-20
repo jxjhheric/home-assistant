@@ -44,7 +44,7 @@ sensor:
     entity_id: sensor.filtered_washroom_temperature
     max_age:
       minutes: 30
-- platform: filter
+  - platform: filter
     name: "filtered bedroom humidity"
     entity_id: sensor.gateway_hum
     filters:
@@ -54,7 +54,7 @@ sensor:
       - filter: lowpass
         time_constant: 10
         precision: 2
-- platform: filter
+  - platform: filter
     name: "filtered bedroom temperature"
     entity_id: sensor.gateway_temp
     filters:

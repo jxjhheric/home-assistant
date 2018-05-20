@@ -1,5 +1,5 @@
 homeassistant:
-  sensor:
+sensor:
   - platform: history_stats
     name: jhh at home yesterday
     entity_id: device_tracker.r9s

@@ -1,5 +1,5 @@
 homeassistant:
-  sensor:
+sensor:
   - platform: history_stats
     name: TV ON today
     entity_id: device_tracker.tvbox

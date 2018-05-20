@@ -2,10 +2,19 @@
 homeassistant:
   customize:
     sensor.filtered_washroom_humidity:
-      friendly_name: 真实的湿度
+      friendly_name: 厕所湿度
       icon: mdi:water-percent
     sensor.filtered_washroom_temperature:
-      friendly_name: 真实的温度
+      friendly_name: 厕所温度
+      icon: mdi:temperature-celsius
+    sensor.filtered_bedroom_humidity:
+      friendly_name: 房间湿度
+      icon: mdi:water-percent
+    sensor.filtered_bedroom_temperature:
+      friendly_name: 房间温度
+      icon: mdi:temperature-celsius
+    sensor.filtered_livingroom_temperature:
+      friendly_name: 客厅温度
       icon: mdi:temperature-celsius
 sensor:
   - platform: filter
@@ -21,6 +30,45 @@ sensor:
   - platform: filter
     name: "filtered washroom temperature"
     entity_id: sensor.washroom_temp
+    filters:
+      - filter: outlier
+        window_size: 4
+        radius: 2.0
+      - filter: lowpass
+        time_constant: 10
+      - filter: time_simple_moving_average
+        window_size: 00:05
+        precision: 2
+  - platform: statistics
+    name: "washroom temperature stat"
+    entity_id: sensor.filtered_washroom_temperature
+    max_age:
+      minutes: 30
+- platform: filter
+    name: "filtered bedroom humidity"
+    entity_id: sensor.gateway_hum
+    filters:
+      - filter: outlier
+        window_size: 4
+        radius: 4.0
+      - filter: lowpass
+        time_constant: 10
+        precision: 2
+- platform: filter
+    name: "filtered bedroom temperature"
+    entity_id: sensor.gateway_temp
+    filters:
+      - filter: outlier
+        window_size: 4
+        radius: 2.0
+      - filter: lowpass
+        time_constant: 10
+      - filter: time_simple_moving_average
+        window_size: 00:05
+        precision: 2
+  - platform: filter
+    name: "filtered livingroom temperature"
+    entity_id: ensor.livingroomtemp
     filters:
       - filter: outlier
         window_size: 4

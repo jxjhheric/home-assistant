@@ -1,0 +1,2 @@
+shell_command:
+  start_plex_shield_tv: 'adb connect 10.0.0.2 && sleep 1 && adb shell input keyevent KEYCODE_WAKEUP && adb shell am start -n com.plexapp.android/com.plexapp.plex.activities.SplashActivity && adb kill-server'

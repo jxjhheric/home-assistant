@@ -1,0 +1,70 @@
+automation:
+- alias: "jkq open the door"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.menci
+      to: 'on'
+  condition:
+    - condition: time
+      after: '16:00:00'
+      before: '17:00:00'
+    - condition: time
+      weekday:
+      - mon
+      - tue
+      - wed
+      - thu
+      - fri
+  action:
+    service: mqtt.publish
+    data:
+      topic: home/mqttpublish/jkq
+      payload: "on"
+- alias: "jkq open the tv"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.tvbox
+      to: 'on'
+  condition:
+    - condition: time
+      after: '16:00:00'
+      before: '17:00:00'
+    - condition: time
+      weekday:
+      - mon
+      - tue
+      - wed
+      - thu
+      - fri
+  action:
+    service: mqtt.publish
+    data:
+      topic: home/mqttpublish/jkqopentv
+      payload: "on"
+binary_sensor:
+  - platform: mqtt
+    name: jkq
+    state_topic: "home/mqttpublish/jkq"
+  - platform: mqtt
+    name: jkqopentv
+    state_topic: "home/mqttpublish/jkqopentv"
+
+  - platform: 'bayesian'
+    name: 'jkq go home'
+    prior: 0.3
+    probability_threshold: 0.95
+    observations:
+      - entity_id: 'binary_sensor.jkq'
+        prob_given_true: 0.4
+        prob_given_false: 0.2
+        platform: 'state'
+        to_state: 'on'
+     - entity_id: 'binary_sensor.jkqopentv'
+       prob_given_true: 0.5
+       prob_given_false: 0.4
+       platform: 'state'
+       to_state: 'on'
+     - entity_id: 'sensor.body_sensor'
+       prob_given_true: 0.2
+       platform: 'state'
+       to_state: 'on'

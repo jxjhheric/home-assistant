@@ -67,4 +67,4 @@ binary_sensor:
       - entity_id: 'sensor.body_sensor'
         prob_given_true: 0.2
         platform: 'state'
-        to_state: 'on'
+        to_state: 'true'

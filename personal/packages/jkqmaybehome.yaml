@@ -59,12 +59,12 @@ binary_sensor:
         prob_given_false: 0.2
         platform: 'state'
         to_state: 'on'
-     - entity_id: 'binary_sensor.jkqopentv'
-       prob_given_true: 0.5
-       prob_given_false: 0.4
-       platform: 'state'
-       to_state: 'on'
-     - entity_id: 'sensor.body_sensor'
-       prob_given_true: 0.2
-       platform: 'state'
-       to_state: 'on'
+      - entity_id: 'binary_sensor.jkqopentv'
+        prob_given_true: 0.5
+        prob_given_false: 0.4
+        platform: 'state'
+        to_state: 'on'
+      - entity_id: 'sensor.body_sensor'
+        prob_given_true: 0.2
+        platform: 'state'
+        to_state: 'on'

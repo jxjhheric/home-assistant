@@ -24,7 +24,7 @@ automation:
   trigger:
     - platform: state
       entity_id: device_tracker.tvbox
-      to: 'on'
+      to: 'home'
   condition:
     - condition: time
       after: '16:00:00'

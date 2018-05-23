@@ -37,7 +37,7 @@ automation:
     - condition:
       platform: template
       #value_template: "{{ states.sensor.bedroom_bt_distance.attributes.name = '6472d8b53e23' }}"
-      value_template: "{{is_state('sensor.bedroom_bt_distance.attributes.name','6472d8b53e23')}}"
+      value_template: "{{is_state_attr('sensor.bedroom_bt_distance', 'name', 6472d8b53e23)}}"
   action:
     service: mqtt.publish
     data:

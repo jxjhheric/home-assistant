@@ -3,37 +3,16 @@ homeassistant:
     sensor.filtered_bedroom_bt_distance:
       friendly_name: 离房间蓝牙距离
       icon: mdi:map-marker-distance
-    sensor.filtered_washroom_bt_distance:
-      friendly_name: 离厕所蓝牙距离
-      icon: mdi:map-marker-distance
-    sensor.filtered_kitchen_bt_distance:
-      friendly_name: 离厨房蓝牙距离
-      icon: mdi:map-marker-distance
-    sensor.filtered_guestroom BT distance:
-      friendly_name: 离客房蓝牙距离
-      icon: mdi:map-marker-distance
 
 sensor:
   - platform: mqtt
     name: "bedroom BT distance"
     state_topic: "home/BTtoMQTT/room2/房间"
-    unit_of_measurement: 'm'
+    unit_of_measurement: 
     value_template: "{{ value_json.distance }}"
-  - platform: mqtt
-    name: "washroom BT distance"
-    state_topic: "home/BTtoMQTT/room2/厕所"
-    unit_of_measurement: 'm'
-    value_template: "{{ value_json.distance }}"
-  - platform: mqtt
-    name: "kitchen BT distance"
-    state_topic: "home/BTtoMQTT/room2/厨房"
-    unit_of_measurement: 'm'
-    value_template: "{{ value_json.distance }}"
-  - platform: mqtt
-    name: "guestroom BT distance"
-    state_topic: "home/BTtoMQTT/room2/客房"
-    unit_of_measurement: 'm'
-    value_template: "{{ value_json.distance }}"
+    json_attributes:
+      - name
+
   - platform: filter
     name: "filtered bedroom BT distance"
     entity_id: sensor.bedroom_bt_distance
@@ -44,33 +23,22 @@ sensor:
       - filter: lowpass
         time_constant: 10
         precision: 2
-  - platform: filter
-    name: "filtered washroom BT distance"
-    entity_id: sensor.washroom_bt_distance
-    filters:
-      - filter: outlier
-        window_size: 2
-        radius: 4.0
-      - filter: lowpass
-        time_constant: 10
-        precision: 2
-  - platform: filter
-    name: "filtered kitchen BT distance"
-    entity_id: sensor.kitchen_bt_distance
-    filters:
-      - filter: outlier
-        window_size: 2
-        radius: 4.0
-      - filter: lowpass
-        time_constant: 10
-        precision: 2
-  - platform: filter
-    name: "filtered guestroom BT distance"
-    entity_id: sensor.guestroom_bt_distance
-    filters:
-      - filter: outlier
-        window_size: 2
-        radius: 4.0
-      - filter: lowpass
-        time_constant: 10
-        precision: 2
+  - platform: mqtt_room
+    device_id: 76bff97c0a49
+    name: 'jxjhheric'
+    state_topic: "home/BTtoMQTT/room3/"
+    timeout: 5
+automation:
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.filtered_bedroom_bt_distance
+    above: 0
+  condition:   
+    - condition:
+      platform: template
+      value_template: "{{ states.sensor.bedroom_bt_distance.attributes.name == '6472d8b53e23' }}"
+  action:
+    service: mqtt.publish
+    data:
+      topic: "home/BTtoMQTT/room3/房间"
+      payload_template: '{"id": "000000000000", "name": "76bff97c0a49", "distance": "{{state.sensor.filtered_bedroom_bt_distance}}"}'

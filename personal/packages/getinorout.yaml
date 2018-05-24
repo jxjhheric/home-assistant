@@ -1,0 +1,73 @@
+##########################################################
+#             用门磁和人体感应判断进门还是出门              #
+##########################################################
+homeassistant:
+sensor:
+  - platform: mqtt
+    name: "CF Body Motion"
+    state_topic: "home/CF/HCSR501toMQTT"
+    qos: 0
+    payload_on: "1"
+    payload_on: "0"
+    device_class: motion
+        
+automation:
+- alias: notify to close the door
+  trigger:
+    platform: state
+    entity_id: binary_sensor.menci
+    to: 'on'
+    for:
+      minutes: "/30"
+  condition:
+    condition: template
+    value_template: '{{(as_timestamp(now()) - as_timestamp(states.sensor.cf_body_motion.last_changed))|int > 1800}}'
+#    value_template: '{{((as_timestamp(now()) - as_timestamp(states.sensor.jhh.last_changed))|int <60)}}'
+  action:
+    service: notify.notify
+    data_template:
+      message: >
+        {{ [
+        "请关门",
+        "门中开着，会有蚊子苍蝇飞进来哦"
+        ] | random }}
+- alias: welcome home
+  trigger:
+    platform: state
+    entity_id: sensor.cf_body_motion
+    to: 'on'
+  condition:
+    condition: template
+    value_template: '{{(as_timestamp(now()) - as_timestamp(states.binary_sensor.menci.last_changed)) <5}}'
+#    value_template: '{{((as_timestamp(now()) - as_timestamp(states.sensor.jhh.last_changed))|int <60)}}'
+  action:
+    service: notify.notify
+    data_template:
+      message: >
+        {{ [
+        "现在是{{ now().strftime(\"%H:%M\") }},家里的温度是{{ states.sensor.gateway_temp.state }}度,相对湿度是百分之{{ states.sensor.gateway_hum.state }}",
+        "欢迎回家",
+        "想家了吗?莉莎已经一天没有见到你啦，和它打个招呼吧",
+        "金屋银屋不如自己的狗窝,还是家里最舒服"
+        ] | random }}
+- alias: go out
+  trigger:
+    platform: state
+    entity_id: binary_sensor.menci
+    to: 'on'
+  condition:
+    condition: state
+    entity_id: sensor.cf_body_motion
+    state: 'on'
+#    value_template: '{{((as_timestamp(now()) - as_timestamp(states.sensor.jhh.last_changed))|int <60)}}'
+  action:
+    - service: script.turn_on
+      entity_id: script.download_caiyundata
+    - service: notify.notify
+      data_template:
+        message: >
+          {{ [
+          "现在是{{ now().strftime(\"%H:%M\") }},外面天气{{ states.sensor.caiyun_hourly_skycon.state }},温度{{ states.sensor.caiyun_hourly_temperature.state }},{{ states.sensor.caiyun_minutely_description.state }}",
+          "记得早点回家哦",
+          "出门之前想想有没有什么需要带的，有没有落下的"
+          ] | random }}

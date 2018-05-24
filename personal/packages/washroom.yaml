@@ -16,7 +16,7 @@ tate| float - states.sensor.gateway_hum.state| float)| float > 17}}'
         friendly_name: "someone washing"
         value_template: "{{ (states.binary_sensor.csmenci.state == 'on' and  states.sensor.body_sensor.state == 'on'}}"
 
- - platform: 'bayesian'
+  - platform: 'bayesian'
     prior: 0.3
     name: 'someone in washroom'
     probability_threshold: 0.95

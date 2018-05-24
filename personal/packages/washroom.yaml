@@ -36,7 +36,3 @@ tate| float - states.sensor.gateway_hum.state| float)| float > 17}}'
         prob_given_false: 0.8
         platform: 'state'
         to_state: 'on'
-      - entity_id: 'binary_sensor.someone_in_washroom'
-        prob_given_true: 0.99
-        platform: 'state'
-        to_state: 'on'

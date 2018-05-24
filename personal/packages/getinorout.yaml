@@ -9,7 +9,7 @@ sensor:
     qos: 0
     payload_on: "1"
     payload_on: "0"
-    device_class: motion
+#    device_class: motion
         
 automation:
 - alias: notify to close the door
@@ -18,7 +18,8 @@ automation:
     entity_id: binary_sensor.menci
     to: 'on'
     for:
-      minutes: "/30"
+      minutes: 30
+      seconds: 00
   condition:
     condition: template
     value_template: '{{(as_timestamp(now()) - as_timestamp(states.sensor.cf_body_motion.last_changed))|int > 1800}}'
@@ -38,7 +39,7 @@ automation:
     to: 'on'
   condition:
     condition: template
-    value_template: '{{(as_timestamp(now()) - as_timestamp(states.binary_sensor.menci.last_changed)) <5}}'
+    value_template: '{{(as_timestamp(now()) - as_timestamp(states.binary_sensor.menci.last_changed)) |int <5}}'
 #    value_template: '{{((as_timestamp(now()) - as_timestamp(states.sensor.jhh.last_changed))|int <60)}}'
   action:
     service: notify.notify

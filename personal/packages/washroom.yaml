@@ -8,14 +8,17 @@ binary_sensor:
     sensors:
       temp_and_hum_rise:
         friendly_name: "temp and hum rise when someone washing"
-        value_template: '{{ (states.sensor.washroom_temp.state| float - states.sensor.gateway_temp.state| float) | float > 2 and  (states.sensor.washroom_hum.s
-tate| float - states.sensor.gateway_hum.state| float)| float > 17}}'
+        value_template: >-
+           {{ (states.sensor.washroom_temp.state| float - states.sensor.gateway_temp.state| float) | float > 2 and  (states.sensor.washroom_hum.s
+tate| float - states.sensor.gateway_hum.state| float)| float > 17}}
   - platform: template
     sensors:
       someone_in_washroom:
         friendly_name: "someone washing"
-        value_template: "{{ (states.binary_sensor.csmenci.state == 'on' and  states.sensor.body_sensor.state == 'on'}}"
-
+        value_template: >-
+          {{ is_state('binary_sensor.csmenci', 'on')
+             and is_state('sensor.body_sensor', 'on')}}
+          
   - platform: 'bayesian'
     prior: 0.3
     name: 'someone in washroom'

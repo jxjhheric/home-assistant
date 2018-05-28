@@ -15,15 +15,15 @@ tate| float - states.sensor.gateway_hum.state| float)| float > 17}}
     sensors:
       hum_falling:
         entity_id: sensor.gateway_hum
-        sample_duration: 110
-        min_gradient: -0.018 #-2/110
-        device_class: moisture
+          sample_duration: 110
+          min_gradient: -0.018 #-2/110
+          device_class: moisture
 
       hum_rising:
         entity_id: sensor.gateway_hum
-        sample_duration: 110
-        min_gradient: 0.018
-        device_class: moisture
+          sample_duration: 110
+          min_gradient: 0.018
+          device_class: moisture
         
   - platform: template
     sensors:

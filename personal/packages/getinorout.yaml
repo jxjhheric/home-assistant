@@ -49,12 +49,25 @@ automation:
     - service: notify.notify
       data_template:
         message: >
+          {% set timenow = now().time().strftime("%H") | int %}
+          {% if timenow > 6 and timenow < 12 %}
+          早上好
+          {% elif timenow >= 12 and timenow < 14 %}
+          中午好
+          {% elif timenow >= 14 and timenow < 18 %}
+          下午好
+          {% elif timenow >= 18 and timenow < 23 %}
+          晚上好
+          {% else %}
+          你好
+          {% endif %}
           {{ [
+          "欢迎回家",
           "现在是{{ now().strftime(\"%H:%M\") }},家里的温度是{{ states.sensor.gateway_temp.state }}度,相对湿度是百分之{{ states.sensor.gateway_hum.state }}",
-          "{% set timenow = now().time().strftime("%H") | int %}{% if timenow > 6 and timenow < 12 %}早上好{% elif timenow >= 12 and timenow < 14 %}中午好{% elif timenow >= 14 and timenow < 18 %}下午好{% elif timenow >= 18 and timenow < 23 %}晚上好{% else %} 你好{% endif %}，欢迎回家",
           "想家了吗?莉莎已经一天没有见到你啦，和它打个招呼吧",
           "金屋银屋不如自己的狗窝,还是家里最舒服"
           ] | random }}
+         
     - service: camera.snapshot
       data:
         entity_id: camera.ezviz
@@ -85,9 +98,23 @@ automation:
     - service: notify.notify
       data_template:
         message: >
+          {% set timenow = now().time().strftime("%H") | int %}
+          {% if timenow > 6 and timenow < 12 %}
+          早上好
+          {% elif timenow >= 12 and timenow < 14 %}
+          中午好
+          {% elif timenow >= 14 and timenow < 18 %}
+          下午好
+          {% elif timenow >= 18 and timenow < 23 %}
+          晚上好
+          {% else %}
+          你好
+          {% endif %}
           {{ [
           "现在是{{ now().strftime(\"%H:%M\") }},外面天气{{ states.sensor.caiyun_hourly_skycon.state }},温度{{ states.sensor.caiyun_hourly_temperature.state }},{{ states.sensor.caiyun_minutely_description.state }}",
-          "{% set timenow = now().time().strftime("%H") | int %}{% if timenow > 6 and timenow < 12 %}希望你有美好的一天{% elif timenow >= 12 and timenow < 14 %}出门注意安全{% elif timenow >= 14 and timenow < 18 %}下午好，我会在家里等你回来的{% elif timenow >= 18 and timenow < 23 %}这么晚了还要出门？记得早点回家{% else %}家里最安全{% endif %}"
+          "希望你有美好的一天",
+          "出门注意安全",
+          "我会在家里等你回来的",
           "记得早点回家哦",
           "出门之前想想有没有什么需要带的，有没有辣下的"
           ] | random }}

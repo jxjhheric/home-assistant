@@ -26,7 +26,7 @@ script:
       entity_id: counter.counter
 
 automation:
-# 电视开机开始启动计时器
+# 电视开机开始启动计时器/重置计数器
   - alias: timer_start
     initial_state: on
     hide_entity: true
@@ -35,8 +35,20 @@ automation:
       entity_id: device_tracker.kttv
       to: 'home'
     action:
-      service: timer.start
-      entity_id: timer.tvtimer
+      - service: counter.reset
+        entity_id: counter.counter
+      - service: timer.start
+        entity_id: timer.tvtimer
+  - alias: timer_stop
+    initial_state: on
+    hide_entity: true
+    trigger:
+      platform: state
+      entity_id: device_tracker.kttv
+      to: 'not_home'
+    action:
+      - service: timer.cancel
+        entity_id: timer.tvtimer
 # 时间到，语音提醒--重新计时--计数增加        
   - alias: timer_notify
     initial_state: on

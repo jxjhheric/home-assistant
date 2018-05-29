@@ -7,8 +7,8 @@ binary_sensor:
     name: "CF Body Motion"
     state_topic: "home/CF/HCSR501toMQTT"
     qos: 0
-    payload_on: "1"
-    payload_on: "0"
+    payload_on: "true"
+    payload_off: "false"
     device_class: motion
         
 automation:

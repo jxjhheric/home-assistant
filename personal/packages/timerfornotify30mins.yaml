@@ -35,7 +35,7 @@ automation:
     hide_entity: true
     trigger:
       platform: state
-      entity_id: device_tracker.kttv
+      entity_id: device_tracker.tvbox
       to: 'home'
     action:
       - service: counter.reset
@@ -47,7 +47,7 @@ automation:
     hide_entity: true
     trigger:
       platform: state
-      entity_id: device_tracker.kttv
+      entity_id: device_tracker.tvbox
       to: 'not_home'
     action:
       - service: timer.cancel
@@ -69,9 +69,19 @@ automation:
       - service: shell_command.banedtvbox
       - delay: "00:{{ (range(0, 30)|random|int) }}:00"
       - service: shell_command.allowtvbox
-      - service: timer.start
+      - service_template: >
+        {% if states.device_tracker.tvbox.state == 'home' %}
+          timer.start
+        {% else %}
+          timer.canncel
+        {% endif %}
         entity_id: timer.tvtimer
-      - service: counter.increment
+      - service_template: >
+        {% if states.device_tracker.tvbox.state == 'home' %}
+          counter.increment
+        {% else %}
+          counter.reset
+        {% endif %}
         entity_id: counter.counter
 # 计数达到3次，最后提醒
 - alias: warning

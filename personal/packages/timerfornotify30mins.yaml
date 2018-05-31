@@ -62,7 +62,7 @@ automation:
         entity_id: timer.tvtimer
     action:
       - service: tts.baidu_say
-        entity_id: media_player.floor
+        entity_id: media_player.media_player.40d4a665be11afecffffffffe14da80f
         data:
           message: >
             '{{ ["你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧", "又半个小时过去了，让你的眼睛休息一下，爱你", "半个小时啦，再看爸爸妈妈要生气啦", "小朋友要诚实，说好看半个小时就半个小时"] | random }}''
@@ -96,7 +96,7 @@ automation:
         minutes: 25
   action:
     - service: tts.baidu_say
-        entity_id: media_player.floor
+        entity_id: media_player.media_player.40d4a665be11afecffffffffe14da80f
         data:
           message: '最后警告，最后警告，还有五分钟，请把电视关掉，要不就自动关机了。'
 # 到时间关机，重置计数器
@@ -113,6 +113,34 @@ automation:
         entity_id: switch.tv_switch
       - service: counter.reset
         entity_id: counter.counter
+  - alias: turnoff couter end automation
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.firetv
+        to: home
+        - platform: state
+        entity_id: device_tracker.firetv
+        to: not_home
+    action:
+      service_template: '{% if trigger.to_state.state == "home" %} automation.turn_off {% elif trigger.to_state.state == "not_home" %} automation.turn_on {% endif
+%}'
+      entity_id: automation.counter_end
+  - alias: pause the timer when dlna running
+    trigger:
+      - platform: state
+        entity_id: media_player.40d4a665be11afecffffffffe14da80f
+        to: 'playing'
+        for:
+          minutes: "1"
+      - platform: state
+        entity_id: media_player.40d4a665be11afecffffffffe14da80f
+        to: 'idle'
+        for:
+          minutes: "5"
+    action:
+      service_template: '{% if trigger.to_state.state == "playing" %} timer.pause {% elif  trigger.from_state.state == "playing" %} timer.start {% endif %}'
+      entity_id: timer.tvtimer
 shell_command:
   banedtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p 7758258 ssh -o "StrictHostKeyChecking no" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j DROP'
   allowtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p 7758258 ssh -o "StrictHostKeyChecking no" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j ACCEPT'

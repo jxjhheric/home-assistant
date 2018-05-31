@@ -142,5 +142,5 @@ automation:
       service_template: '{% if trigger.to_state.state == "playing" %} timer.pause {% elif  trigger.from_state.state == "playing" %} timer.start {% endif %}'
       entity_id: timer.tvtimer
 shell_command:
-  banedtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p 7758258 ssh -o "StrictHostKeyChecking no" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j DROP'
-  allowtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p 7758258 ssh -o "StrictHostKeyChecking no" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j ACCEPT'
+  banedtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p password ssh -o "StrictHostKeyChecking no" -o "PasswordAuthentication yes" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j DROP'
+  allowtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p password ssh -o "StrictHostKeyChecking no" -o "PasswordAuthentication yes" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j ACCEPT'

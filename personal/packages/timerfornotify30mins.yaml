@@ -24,6 +24,9 @@ script:
     sequence:
       service: counter.reset
       entity_id: counter.counter
+  cancel_baned:
+    sequence:
+      service: shell_command.allowtvbox
 
 automation:
 # 电视开机开始启动计时器/重置计数器
@@ -63,6 +66,9 @@ automation:
         data:
           message: >
             '{{ ["你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧", "又半个小时过去了，让你的眼睛休息一下，爱你", "半个小时啦，再看爸爸妈妈要生气啦", "小朋友要诚实，说好看半个小时就半个小时"] | random }}''
+      - service: shell_command.banedtvbox
+      - delay: "00:{{ (range(0, 30)|random|int) }}:00"
+      - service: shell_command.allowtvbox
       - service: timer.start
         entity_id: timer.tvtimer
       - service: counter.increment
@@ -97,3 +103,6 @@ automation:
         entity_id: switch.tv_switch
       - service: counter.reset
         entity_id: counter.counter
+shell_command:
+  banedtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p 7758258 ssh -o "StrictHostKeyChecking no" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j DROP'
+  allowtvbox: '/data/data/com.termux/files/usr/bin/sshpass -p 7758258 ssh -o "StrictHostKeyChecking no" admin@192.168.1.1 iptables -I FORWARD -m mac --mac-source 64:88:FF:34:0A:7E -j ACCEPT'

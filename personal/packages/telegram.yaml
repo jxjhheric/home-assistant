@@ -44,12 +44,12 @@ automation:
     action:
       - service: notify.telegram
         data_template:
-          message: '现在是{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.cover.garage_door.last_changed) }}'
+          message: '现在是{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.binary_sensor.menci.last_changed) }}'
           data:
           inline_keyboard:
             - '取消提醒:/ackdoor'
             - '不再提醒:/removekeyboard'
-    - id: 'telegramremoveinline'
+  - id: 'telegramremoveinline'
     alias: 'Telegram callback to remove keyboard'
     hide_entity: true
     trigger:
@@ -71,7 +71,7 @@ automation:
 #recipient to easily acknowledge it by tapping on it. 
 alert:
   door:
-    name: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.cover.garage_door.last_changed) }}. /ackGarage'
+    name: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.binary_sensor.menci.last_changed) }}. /ackGarage'
     entity_id: binary_sensor.menci
     state: 'on'  
     repeat:

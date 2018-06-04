@@ -77,7 +77,7 @@ automation:
 #recipient to easily acknowledge it by tapping on it. 
 alert:
   door:
-    name: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.binary_sensor.menci.last_changed) }}. /ackGarage'
+    name: '提醒关门'
     entity_id: binary_sensor.menci
     state: 'on'  
     repeat:

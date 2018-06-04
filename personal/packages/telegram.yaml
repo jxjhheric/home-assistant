@@ -34,6 +34,10 @@ automation:
     action:
       - service: alert.turn_off
         entity_id: alert.door
+      - service: telegram_bot.answer_callback_query
+        data_template:
+          callback_query_id: '{{ trigger.event.data.id }}'
+          message: 'OK'
         
   - id: 'telegrambinsout'
     alias: 'Telegram bot to remind to close the door'
@@ -41,14 +45,16 @@ automation:
       - entity_id: binary_sensor.menci
         platform: state
         to: 'on'
+        for:
+          minutes: 30
     action:
       - service: notify.telegram
         data_template:
           message: '现在是{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.binary_sensor.menci.last_changed) }}'
           data:
-          inline_keyboard:
-            - '取消提醒:/ackdoor'
-            - '不再提醒:/removekeyboard'
+            inline_keyboard:
+              - '取消提醒:/ackdoor'
+              - '不再提醒:/removekeyboard'
   - id: 'telegramremoveinline'
     alias: 'Telegram callback to remove keyboard'
     hide_entity: true

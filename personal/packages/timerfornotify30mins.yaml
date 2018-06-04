@@ -66,14 +66,18 @@ automation:
         data:
           message: >
             {{ [
-              "你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧", 
-              "又半个小时过去了，让你的眼睛休息一下，爱你",
-              "半个小时啦，再看爸爸妈妈要生气啦", 
-              "小朋友要诚实，说好看半个小时就半个小时"
+            "你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧", 
+            "又半个小时过去了，让你的眼睛休息一下，爱你",
+            "半个小时啦，再看爸爸妈妈要生气啦",
+            "小朋友要诚实，说好看半个小时就半个小时"
             ] | random }}
       - service: shell_command.banedtvbox
       - delay: "00:{{ (range(0, 30)|random|int) }}:00"
       - service: shell_command.allowtvbox
+      - service: tts.baidu_say
+        entity_id: media_player.media_player.40d4a665be11afecffffffffe14da80f
+        data:
+          message: "冻结时间到，又可以看啦“
       - service_template: "{% if states.device_tracker.tvbox.state == 'home' %}timer.start{% else %}timer.canncel{% endif %}"
         entity_id: timer.tvtimer
       - service_template: "{% if states.device_tracker.tvbox.state == 'home' %}counter.increment{% else %}counter.reset{% endif %}"

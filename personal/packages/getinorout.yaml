@@ -81,7 +81,16 @@ automation:
         #          - 'email/346771457@qq.com'
         #          - 'email/652612825@qq.com'                                        
         data:
-          file: /data/data/com.termux/files/home/.homeassistant/downloads/ezviz.jpg    
+          file: /data/data/com.termux/files/home/.homeassistant/downloads/ezviz.jpg
+    - service: notify.telegram
+      data:
+        title: "有人开门"
+        message: "{{ now().strftime(\"%H:%M\") }}时，有人开门,See attached picture"
+        data:
+          photo:
+            - file: /data/data/com.termux/files/home/.homeassistant/downloads/ezviz.jpg
+          caption: Picture Title xy
+
 - alias: go out
   trigger:
     platform: state
@@ -122,3 +131,7 @@ automation:
       data_template:
         message: "{{ now().strftime(\"%H:%M\") }}时，有人出门"
         title: "门磁提醒"
+    - service: notify.telegram
+      data:
+        title: "有人出门"
+        message: "{{ now().strftime(\"%H:%M\") }}时，有人开门"

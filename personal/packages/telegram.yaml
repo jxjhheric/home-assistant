@@ -1,13 +1,13 @@
 telegram_bot:
   - platform: polling
-    api_key: ABCDEFGHJKLMNOPQRSTUVXYZ
+    api_key: !secret telegram_password
     allowed_chat_ids:
-      - CHAT_ID_1
+      - !secret telegram_chat_id
 # Example configuration.yaml entry for the notifier
 notify:
   - name: telegram
     platform: telegram
-    chat_id: CHAT_ID_2
+    chat_id: !secret telegram_chat_id
 
 #If the door has been open for at least 15 minutes, send a notification when it is finally closed
 automation: 
@@ -20,7 +20,7 @@ automation:
     action:
       service: notify.telegram
       data:
-        message: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经关上。' 
+        message: '{{now().strftime("%Y-%m-%d %H:%M:%S ")}}: 门已经关上。' 
 
 #Turn the alert off when a telegram message of /ackGarage is received.       
   - id: replyAckdoor
@@ -50,7 +50,7 @@ automation:
     action:
       - service: notify.telegram
         data_template:
-          message: '现在是{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.binary_sensor.menci.last_changed) }}'
+          message: '现在是{{now().strftime("%Y-%m-%d %H:%M:%S")}}: 门已经打开 {{ relative_time(states.binary_sensor.menci.last_changed) }}'
           data:
             inline_keyboard:
               - '取消提醒:/ackdoor'

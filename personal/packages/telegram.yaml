@@ -3,9 +3,6 @@ telegram_bot:
     api_key: ABCDEFGHJKLMNOPQRSTUVXYZ
     allowed_chat_ids:
       - CHAT_ID_1
-      - CHAT_ID_2
-      - CHAT_ID_3
-
 # Example configuration.yaml entry for the notifier
 notify:
   - name: telegram
@@ -17,170 +14,52 @@ automation:
   - id: DoorClosed
     alias: Notify when  door is closed after an alert
     trigger:
-    platform: state
-    entity_id: binary_sensor.menci
-    from: 'on'
-    to: 'off'
+      platform: state
+      entity_id: binary_sensor.menci
+      to: 'off'
     action:
-    service: notify.telegram
-    data:
-      message: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经关上。' 
+      service: notify.telegram
+      data:
+        message: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经关上。' 
 
 #Turn the alert off when a telegram message of /ackGarage is received.       
   - id: replyAckGarage
-    alias: 'Telegram bot to ack the garageDoor being open'
+    alias: 'Telegram bot to ack the Door being open'
     hide_entity: true
     trigger:
       platform: event
       event_type: telegram_command
       event_data:
-        command: '/ackGarage'
+        command: '/ackdoor'
     action:
       - service: alert.turn_off
         entity_id: alert.door
-
+        
+  - id: 'telegrambinsout'
+  alias: 'Telegram bot to remind to close the door'
+  trigger:
+    - entity_id: binary_sensor.menci
+      platform: state
+      to: 'on'
+  action:
+  - service: notify.telegram
+    data_template:
+      message: '现在是{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.cover.garage_door.last_changed) }}'
+      data:
+          inline_keyboard:
+          - '取消提醒:/ackdoor'
+          - '不在提醒:/removekeyboard'
 #send a repeating alert if the garage door is left open. I put '/ackGarage' at the end of the message to allow the 
 #recipient to easily acknowledge it by tapping on it. 
 alert:
   door:
-    name: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: Garage door open for {{ relative_time(states.cover.garage_door.last_changed) }}. /ackGarage'
-    entity_id: cover.garage_door
-    state: 'open'  
+    name: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: 门已经打开 {{ relative_time(states.cover.garage_door.last_changed) }}. /ackGarage'
+    entity_id: binary_sensor.menci
+    state: 'on'  
     repeat:
-    - 15
-    - 30
+      - 15
+      - 30
     can_acknowledge: True  
     skip_first: True  
     notifiers:
     - telegram
-
-binary_sensor:
-  - platform: template
-    sensors:
-      garage_door_open_for_15mins:
-        value_template: '{{ is_state("cover.garage_door", "open") and (as_timestamp(now()) - as_timestamp(states.cover.garage_door.last_changed) > 15 * 60 ) }}'
-        entity_id: sensor.time
-
-sensor:
-  - platform: time_date
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-
-#If the garage has been open for at least 15 minutes, send a notification when it is finally closed
-automation: 
-  - id: GarageClosed
-    alias: Notify when garage door is closed after an alert
-    trigger:
-    platform: state
-    entity_id: binary_sensor.garage_door_open_for_15mins
-    from: 'on'
-    to: 'off'
-    action:
-    service: notify.telegramBotGroup
-    data:
-      message: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: Garage has been closed.' 
- 
-#Turn the alert off when a telegram message of /ackGarage is received.       
-  - id: replyAckGarage
-    alias: 'Telegram bot to ack the garageDoor being open'
-    hide_entity: true
-    trigger:
-    platform: event
-    event_type: telegram_command
-    event_data:
-      command: '/ackGarage'
-    action:
-    - service: alert.turn_off
-      entity_id: alert.garage_door
- 
-#send a repeating alert if the garage door is left open. I put '/ackGarage' at the end of the message to allow the 
-#recipient to easily acknowledge it by tapping on it. 
-alert:
-  garage_door:
-    name: '{{now().strftime("%H:%M:%S %Y-%m-%d")}}: Garage door open for {{ relative_time(states.cover.garage_door.last_changed) }}. /ackGarage'
-    entity_id: cover.garage_door
-    state: 'open'  
-    repeat:
-    - 15
-    - 30
-    can_acknowledge: True  
-    skip_first: True  
-    notifiers:
-    - telegramBot1
-    - telegramBot2
-    - telegramBot3
- 
-binary_sensor:
-  - platform: template
-    sensors:
-      garage_door_open_for_15mins:
-        value_template: '{{ is_state("cover.garage_door", "open") and (as_timestamp(now()) - as_timestamp(states.cover.garage_door.last_changed) > 15 * 60 ) }}'
-        entity_id: sensor.time

@@ -1,6 +1,6 @@
 telegram_bot:
   - platform: polling
-    api_key: !secret telegram_password
+    api_key: !secret telegram_api
     allowed_chat_ids:
       - !secret telegram_chat_id
 # Example configuration.yaml entry for the notifier
@@ -37,7 +37,7 @@ automation:
       - service: telegram_bot.answer_callback_query
         data_template:
           callback_query_id: '{{ trigger.event.data.id }}'
-          message: 'OK'
+          message: '取消成功'
         
   - id: 'telegrambinsout'
     alias: 'Telegram bot to remind to close the door'

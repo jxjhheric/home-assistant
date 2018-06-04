@@ -89,7 +89,7 @@ automation:
         data:
           photo:
             - file: /data/data/com.termux/files/home/.homeassistant/downloads/ezviz.jpg
-          caption: Picture Title xy
+          caption: 监控截图
 
 - alias: go out
   trigger:

@@ -99,9 +99,9 @@ automation:
           minutes: 25
     action:
       - service: tts.baidu_say
-          entity_id: media_player.40d4a665be11afecffffffffe14da80f
-          data:
-            message: '最后警告，最后警告，还有五分钟，请把电视关掉，要不就自动关机了。'
+        entity_id: media_player.40d4a665be11afecffffffffe14da80f
+        data:
+          message: '最后警告，最后警告，还有五分钟，请把电视关掉，要不就自动关机了。'
 # 到时间关机，重置计数器
   - alias: counter end
     hide_entity: true

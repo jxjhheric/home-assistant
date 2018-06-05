@@ -27,7 +27,30 @@ script:
   cancel_baned:
     sequence:
       service: shell_command.allowtvbox
-
+  turnofftv:
+    sequence:
+      - service: tts.baidu_say
+        entity_id: media_player.media_player.40d4a665be11afecffffffffe14da80f
+        data:
+          message: >
+            {{ [
+            "你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧",
+            "又半个小时过去了，让你的眼睛休息一下，爱你",
+            "半个小时啦，再看爸爸妈妈要生气啦",
+            "小朋友要诚实，说好看半个小时就半个小时"
+            ] | random }}
+      - service: shell_command.banedtvbox
+      - delay: "00:{{ (range(0, 30)|random|int) }}:00"
+      - service: shell_command.allowtvbox
+      - service: tts.baidu_say
+        entity_id: media_player.40d4a665be11afecffffffffe14da80f
+        data:
+          message: "冻结时间到，又可以看啦"
+      - service_template: "{% if states.device_tracker.tvbox.state == 'home' %}timer.start{% else %}timer.canncel{% endif %}"
+        entity_id: timer.tvtimer
+      - service_template: "{% if states.device_tracker.tvbox.state == 'home' %}counter.increment{% else %}counter.reset{% endif %}"
+        entity_id: counter.counter
+      
 automation:
 # 电视开机开始启动计时器/重置计数器
   - alias: timer_start
@@ -52,7 +75,7 @@ automation:
     action:
       - service: timer.cancel
         entity_id: timer.tvtimer
-# 时间到，语音提醒--重新计时--计数增加        
+# 时间到，语音提醒--关网络--延时--开网络--提醒网络通来--重新计时--计数增加        
   - alias: timer_notify
     initial_state: on
     trigger:
@@ -61,27 +84,8 @@ automation:
       event_data:
         entity_id: timer.tvtimer
     action:
-      - service: tts.baidu_say
-        entity_id: media_player.media_player.40d4a665be11afecffffffffe14da80f
-        data:
-          message: >
-            {{ [
-            "你好，我是电视机，我已经运行半个小时了，好累啊，关机让我休息一下吧", 
-            "又半个小时过去了，让你的眼睛休息一下，爱你",
-            "半个小时啦，再看爸爸妈妈要生气啦",
-            "小朋友要诚实，说好看半个小时就半个小时"
-            ] | random }}
-      - service: shell_command.banedtvbox
-      - delay: "00:{{ (range(0, 30)|random|int) }}:00"
-      - service: shell_command.allowtvbox
-      - service: tts.baidu_say
-        entity_id: media_player.40d4a665be11afecffffffffe14da80f
-        data:
-          message: "冻结时间到，又可以看啦"
-      - service_template: "{% if states.device_tracker.tvbox.state == 'home' %}timer.start{% else %}timer.canncel{% endif %}"
-        entity_id: timer.tvtimer
-      - service_template: "{% if states.device_tracker.tvbox.state == 'home' %}counter.increment{% else %}counter.reset{% endif %}"
-        entity_id: counter.counter
+      - service: script.turn_on
+        entity_id: script.turnofftv
 # 计数达到3次，最后提醒
   - alias: warning
     hide_entity: true

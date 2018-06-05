@@ -2,7 +2,16 @@
 #                  通过门磁和红外判断厕所是否有人               #
 ##############################################################
 homeassistant:
-
+automation:
+  - alias: washroom_light_base_on_motion
+    trigger:
+      - platform: state
+        entity_id: sensor.body_sensor
+    action:
+      - delay: "{% if trigger.to_state.state == "true" %}0:0{% elif 23> now().hour >=18 %}0:15{% else %}0:2{% endif %}"
+      - service_template: "switch.turn_{{% 'on' if trigger.to_state.state == "true" else 'off'%}" 
+        entity_id: switch.washroom_light
+       
 binary_sensor:
   - platform: template
     sensors:
@@ -11,6 +20,7 @@ binary_sensor:
         value_template: >-
            {{ (states.sensor.washroom_temp.state| float - states.sensor.gateway_temp.state| float) | float > 2 and  (states.sensor.washroom_hum.s
 tate| float - states.sensor.gateway_hum.state| float)| float > 17}}
+  
   - platform: trend
     sensors:
       hum_falling:

@@ -8,8 +8,8 @@ automation:
       - platform: state
         entity_id: sensor.body_sensor
     action:
-      - delay: "{% if trigger.to_state.state == "true" %}0:0{% elif 23> now().hour >=18 %}0:15{% else %}0:2{% endif %}"
-      - service_template: "switch.turn_{{% 'on' if trigger.to_state.state == "true" else 'off'%}" 
+      - delay: "{% if trigger.to_state.state == 'true' %}0:0{% elif 23> now().hour >=18 %}0:15{% else %}0:2{% endif %}"
+      - service_template: "switch.turn_{{% 'on' if trigger.to_state.state == 'true' else 'off' %}" 
         entity_id: switch.washroom_light
        
 binary_sensor:

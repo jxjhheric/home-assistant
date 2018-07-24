@@ -13,6 +13,7 @@ group:
   timer_switch:
     name: 智能延迟器
     entities:
+      - input_select.onoff_switch
       - input_select.timer_fan
       - input_select.timer_switch
       - automation.text_timer
@@ -52,6 +53,14 @@ input_select:
       - 电视开关
     initial: 'Select Input'
     icon: mdi:toggle-switch-off
+  onoff_switch:
+    name: 开关选择
+    options:
+      - Select Input
+      - 开
+      - 关
+    initial: '关'
+    icon: mdi:toggle-switch-off
 
 script:
   timer_cancel:
@@ -81,7 +90,12 @@ automation:
       event_data: 
         entity_id: timer.timer
     action: 
-      - service: switch.turn_off
+      - service_template: >-
+          {% if is_state("input_select.onoff_switch", "关") %}
+            switch.turn_off
+          {% elif is_state("input_select.onoff_switch", "开") %}
+            switch.turn_on
+          {% endif %}
         data_template:
           entity_id: >-
             {% if is_state("input_select.timer_fan", "主卧小吊扇") %}
@@ -97,6 +111,10 @@ automation:
         data:
           entity_id: input_select.timer_fan
           option: "Select Input"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.onoff_switch
+          option: "关"
 
   - alias: timer_switch_turnoff
   initial_state: on
@@ -106,7 +124,12 @@ automation:
       event_data:
         entity_id: timer.timer
     action:
-      - service: homeassistant.turn_off
+      - service_template: >-
+          {% if is_state("input_select.onoff_switch", "关") %}
+            homeassistant.turn_off
+          {% elif is_state("input_select.onoff_switch", "开") %}
+            homeassistant.turn_on
+          {% endif %}
         data_template:
           entity_id: >-
             {% if is_state("input_select.timer_switch", "客厅灯") %}
@@ -124,3 +147,7 @@ automation:
         data:
           entity_id: input_select.timer_switch
           option: "Select Input"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.onoff_switch
+          option: "关"

@@ -1,0 +1,16 @@
+homeassistant:
+automation: 
+  - id: notify
+    alias: notify_for_nas_diskusage
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.free_diskusage
+      above: '99'
+    action:
+      - service: notify.telegram
+        data_template:
+          message: '{{now().strftime("%Y-%m-%d %H:%M:%S ")}}: 硬盘容量已经使用{{ states.sensor.free_diskusage.state }}%，请及时删除文件。'
+      - service: notify.weixin
+        data_template:
+          message: '{{now().strftime("%Y-%m-%d %H:%M:%S ")}}: 硬盘容量已经使用{{ states.sensor.free_diskusage.state }}%，请及时删除文件。'
+          title: "硬盘容量提醒"
